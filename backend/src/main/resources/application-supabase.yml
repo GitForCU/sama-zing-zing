@@ -1,0 +1,18 @@
+# Server-side JDBC only. Keep the sama schema OUT of Data API exposed schemas.
+spring:
+  datasource:
+    hikari:
+      maximum-pool-size: ${DATABASE_POOL_SIZE:5}
+      minimum-idle: 1
+      connection-init-sql: SET search_path TO sama
+  flyway:
+    schemas: sama
+    default-schema: sama
+    create-schemas: true
+  jpa:
+    properties:
+      hibernate:
+        default_schema: sama
+sama:
+  auth:
+    mode: ${SAMA_AUTH_MODE:supabase}

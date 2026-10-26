@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: sama
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/sama}
+    username: ${DATABASE_USER:sama}
+    password: ${DATABASE_PASSWORD:sama_local}
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 50
+        order_updates: true
+        order_inserts: true
+  session:
+    store-type: jdbc
+    jdbc:
+      initialize-schema: never
+    timeout: 30m
+  jackson:
+    time-zone: Asia/Bangkok
+server:
+  address: ${SERVER_ADDRESS:127.0.0.1}
+  port: ${PORT:8080}
+  servlet:
+    session:
+      cookie:
+        name: SAMA_SESSION
+        http-only: true
+        same-site: lax
+        secure: ${COOKIE_SECURE:false}
+  error:
+    include-message: never
+    include-stacktrace: never
+logging:
+  level:
+    org.hibernate.SQL: warn
+sama:
+  auth:
+    mode: ${SAMA_AUTH_MODE:local}
+    supabase-url: ${SUPABASE_URL:}
+    publishable-key: ${SUPABASE_PUBLISHABLE_KEY:}

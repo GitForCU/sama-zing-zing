@@ -1,0 +1,41 @@
+services:
+  database:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: sama
+      POSTGRES_USER: sama
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-sama_local}
+    volumes:
+      - sama-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sama -d sama"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+  backend:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+    environment:
+      DATABASE_URL: jdbc:postgresql://database:5432/sama
+      DATABASE_USER: sama
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-sama_local}
+      SERVER_ADDRESS: 0.0.0.0
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-demo}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      SAMA_AUTH_MODE: ${SAMA_AUTH_MODE:-local}
+      SUPABASE_URL: ${SUPABASE_URL:-}
+      SUPABASE_PUBLISHABLE_KEY: ${SUPABASE_PUBLISHABLE_KEY:-}
+    depends_on:
+      database:
+        condition: service_healthy
+  web:
+    build:
+      context: ..
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "127.0.0.1:8088:80"
+    depends_on:
+      - backend
+volumes:
+  sama-data:
